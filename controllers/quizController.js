@@ -19,7 +19,7 @@ exports.generateQuiz = async (req, res) => {
         }
 
         // Generate the prompt for Gemini API
-        const prompt = `Based on these articles, generate all mcq questions with correct answer quiz. Return only a valid JSON response.` +
+        const prompt = `Please Read these article carefully and based on the content of these articles, generate competitive level exam of INDIA mcq questions with correct answer quiz. Return only a valid JSON response.` +
             links.map((link, i) => `\nArticle ${i + 1}: ${link}`).join("");
 
         // Call Gemini API

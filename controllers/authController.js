@@ -47,8 +47,6 @@ exports.register = async (req, res) => {
         res.status(500).json({ error: "Server error. Please try again later." });
     }
 };
-
-
 exports.login = async (req, res) => {
     try {
         // Validate input data
