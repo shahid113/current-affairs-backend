@@ -74,7 +74,20 @@ exports.login = async (req, res) => {
         // Generate JWT token
         const accessToken = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: process.env.ACCESS_TOKEN_EXPIRY });
 
-        res.json({ message: "Login successful", token: accessToken });
+        // Exclude password from response
+        const userResponse = {
+            _id: user._id,
+            name: user.name,
+            email: user.email,
+            createdAt: user.createdAt,
+            updatedAt: user.updatedAt
+        };
+
+        res.json({ 
+            message: "Login successful", 
+            user: userResponse,
+            token: accessToken 
+        });
     } catch (error) {
         console.error("Login Error:", error);
         res.status(500).json({ error: "Server error. Please try again later." });
