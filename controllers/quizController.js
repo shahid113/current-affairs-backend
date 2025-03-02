@@ -179,9 +179,8 @@ exports.getQuiz = async (req, res) => {
             return res.status(401).json({ error: "Unauthorized: User ID missing." });
         }
 
-        // Fetch quizzes for the authenticated user, sorted by creation date (descending)
-        const quizzes = await Quiz.find({ userID }).sort({ createdAt: -1 });
-
+        // Fetch quizzes for the authenticated user
+        const quizzes = await Quiz.find({ userID })
         if (!quizzes.length) {
             return res.status(404).json({ message: "No quizzes found for this user." });
         }
