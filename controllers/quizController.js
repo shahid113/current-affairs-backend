@@ -24,33 +24,35 @@ exports.generateQuiz = async (req, res) => {
         2. For each article, generate 2-3 MCQs that reflect the difficulty, style, and analytical depth of real Indian competitive exams. Questions should test comprehension, critical thinking, and application of concepts, not just rote recall.
         3. Each question should have 4 options, with only one correct answer. Include explanations for each option, especially the correct one.
         4. Ensure questions are framed in a professional, examiner-like tone, avoiding ambiguity or factual errors.
-        5. Return the response in JSON format in this structure [
+        5. Return the response in JSON format in this structure
+         [ 
             {
                 "question": "Question Text",
-                "options": [
-                     "Option A",
-                     "Option B",
-                     "Option C",
-                     "Option D"
-                ],
-                "answer": "Option A",
+                 "options": {
+                     "A": "Option A",
+                     "B": "Option B",
+                     "C": "Option C",
+                     "D": "Option D"
+                  },
+                "answer": "A",
                 "explanation": "Correct Explaination",
-            },
-                 {
+             },
+                 
+              {
                 "question": "Question Text",
-                "options": [
-                     "Option A",
-                     "Option B",
-                     "Option C",
-                     "Option D"
-                ],
-                "answer": "Option A",
+                 "options": {
+                     "A": "Option A",
+                     "B": "Option B",
+                     "C": "Option C",
+                     "D": "Option D"
+                  },
+                "answer": "B",
                 "explanation": "Correct Explaination",
-            }
+             }
              .....
             ],
-    }.
-        Articles to analyze:
+           }.
+          Articles to analyze:
         ${links.map((link, i) => `Article ${i + 1}: ${link}`).join("\n")}
         `;
 
@@ -61,6 +63,8 @@ exports.generateQuiz = async (req, res) => {
 
         // Extract raw text response
         let quizText = response.data.candidates?.[0]?.content?.parts?.[0]?.text || "";
+
+        console.log(quizText);
 
         // Clean the response to remove unwanted characters
         quizText = quizText.trim()
