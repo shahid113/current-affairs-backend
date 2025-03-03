@@ -21,7 +21,7 @@ exports.generateQuiz = async (req, res) => {
         // Generate the prompt for Gemini API
         const prompt = `You are an expert examiner tasked with creating high-quality multiple-choice questions (MCQs) for Indian competitive exams (e.g., UPSC, SSC, Banking, or similar). Follow these steps:
         1. Read and analyze the following articles one by one, in the order provided.
-        2. For each article, generate 2-3 MCQs that reflect the difficulty, style, and analytical depth of real Indian competitive exams. Questions should test comprehension, critical thinking, and application of concepts, not just rote recall.
+        2. For each article, generate 2-3 MCQs that reflect the difficulty, style, and analytical depth of real Indian competitive exams. Questions should critical thinking and application of concepts, not just rote recall.
         3. Each question should have 4 options, with only one correct answer. Include explanations for each option, especially the correct one.
         4. Ensure questions are framed in a professional, examiner-like tone, avoiding ambiguity or factual errors.
         5. Return the response in JSON format in this structure
@@ -63,9 +63,6 @@ exports.generateQuiz = async (req, res) => {
 
         // Extract raw text response
         let quizText = response.data.candidates?.[0]?.content?.parts?.[0]?.text || "";
-
-        console.log(quizText);
-
         // Clean the response to remove unwanted characters
         quizText = quizText.trim()
             .replace(/^```json/, '') // Remove leading ```json
@@ -87,10 +84,8 @@ exports.generateQuiz = async (req, res) => {
         });
 
         await newQuiz.save();
-
         res.status(201).json({ message: "Quiz generated successfully.", quiz: newQuiz });
     } catch (error) {
-        console.error("Error generating quiz:", error);
         res.status(500).json({ error: error.message });
     }
 };
