@@ -97,8 +97,13 @@ exports.generateQuiz = async (req, res) => {
 
 exports.submitQuiz = async (req, res, next) => {
     try {
-        const { quizID, answers } = req.body;
-        const userID = req.user.userId; // Assuming user authentication middleware sets this
+        const { quizID, attempt } = req.body;
+        const userID = req.user.userId;
+
+        // Validate request body
+        if (!quizID || typeof attempt !== 'boolean') {
+            return res.status(400).json({ message: "Quiz ID and attempt (true/false) are required" });
+        }
 
         // Fetch quiz from the database
         const quiz = await Quiz.findById(quizID);
@@ -106,69 +111,30 @@ exports.submitQuiz = async (req, res, next) => {
             return res.status(404).json({ message: "Quiz not found" });
         }
 
-        // Extract correct answers with error handling
-        let correctAnswers;
-        try {
-            correctAnswers = quiz.quiz.map(q => q?.answer || null); // Handle undefined/null values
-        } catch (err) {
-            console.error("Error extracting correct answers:", err);
-            return res.status(500).json({ message: "Error processing quiz answers" });
+        // Check if the quiz belongs to the user (optional, depending on your requirements)
+        if (quiz.userID.toString() !== userID) {
+            return res.status(403).json({ message: "Unauthorized to submit this quiz" });
         }
 
-        // Calculate score
-        let score = 0;
-        answers.forEach((ans, index) => {
-            if (ans === correctAnswers[index]) {
-                score++;
+        // Update the quiz attempt
+        quiz.attempt = attempt;
+        await quiz.save();
+
+        // Return success response
+        return res.status(200).json({
+            message: "Quiz attempt submitted successfully",
+            quiz: {
+                quizID: quiz._id,
+                attempt: quiz.attempt,
+                updatedAt: new Date()
             }
         });
 
-        // Total questions and percentage
-        const totalQuestions = correctAnswers.length;
-        const percentage = ((score / totalQuestions) * 100).toFixed(2) + "%";
-
-        // Check if the user has already submitted this quiz
-        let existingResult = await Result.findOne({ userID, quizID });
-
-        if (existingResult) {
-            // Update the existing result
-            existingResult.score = score;
-            existingResult.totalQuestions = totalQuestions;
-            existingResult.percentage = percentage;
-            existingResult.updatedAt = new Date();
-
-            await existingResult.save();
-            return res.json({
-                message: "Quiz submission updated successfully",
-                score,
-                totalQuestions,
-                percentage
-            });
-        } else {
-            // Create a new result entry
-            const newResult = new Result({
-                userID,
-                quizID,
-                score,
-                totalQuestions,
-                percentage
-            });
-
-            await newResult.save();
-
-            res.json({
-                message: "Quiz submitted successfully",
-                score,
-                totalQuestions,
-                percentage
-            });
-        }
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: "Server error" });
     }
 };
-
 
 
 exports.getQuiz = async (req, res) => {
