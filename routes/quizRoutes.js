@@ -5,7 +5,7 @@ const authMiddleware = require("../middleware/authMiddleware");
 const router = express.Router();
 
 router.post("/generate-quiz", authMiddleware, generateQuiz);
-router.post("/submit-quiz", authMiddleware, submitQuiz);
+router.put("/submit-quiz", authMiddleware, submitQuiz);
 router.get('/get-quiz', authMiddleware, getQuiz);
 router.get("/result/:quizID", authMiddleware, getResultByUserAndQuizID);
 
