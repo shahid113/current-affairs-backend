@@ -4,7 +4,6 @@ const User = require('../models/User');
 
 // Constants
 const OTP_EXPIRY_MINUTES = 15;
-const SALT_ROUNDS = 10;
 
 // Generate a 6-digit OTP
 const generateOTP = () => {
@@ -167,7 +166,7 @@ const passwordRecovery = async (req, res) => {
         }
 
         // Hash the new password with bcrypt
-        const hashedPassword = await bcrypt.hash(password, SALT_ROUNDS);
+        const hashedPassword = await bcrypt.hash(password, 12);
         user.password = hashedPassword;
         user.emailOTP = undefined;
         user.otpExpiry = undefined;
